@@ -6,13 +6,16 @@ const transporter = require('./../emailconfig');
 
 router.post('/send',async (req,res,next)=>{
 
-    const fromEmail = req.body.email;
-    const name = req.body.name;
-    const surname = req.body.surname;
-    const subject = req.body.subject;
-    const message = req.body.message;
     
-    if(fromEmail===undefined || name===undefined || surname===undefined || subject===undefined || message==undefined){
+    // const fromEmail = req.body.email;
+    // const name = req.body.name;
+    // const surname = req.body.surname;
+    // const subject = req.body.subject;
+    // const message = req.body.message;
+
+    const { email,name,surname,subject,message } = req.body;
+    
+    if(email===undefined || name===undefined || surname===undefined || subject===undefined || message==undefined){
 
         return res.status(400).json({
             status:"BAD",
@@ -20,7 +23,7 @@ router.post('/send',async (req,res,next)=>{
         });
 
     }else{
-        if(fromEmail==='' || name==='' || surname==='' || subject==='' || message==''){
+        if(email==='' || name==='' || surname==='' || subject==='' || message==''){
 
             return res.status(400).json({
                 status:"BAD",
@@ -29,12 +32,17 @@ router.post('/send',async (req,res,next)=>{
 
         }else{
 
+            const html=`<h2><i>Client Details 📝</i></h2>
+                        <b>Name: ${name}</b><br/>
+                        <b>Surname: ${surname}</b></br/>
+                        <h3>${subject}</h3>  
+                        <p><b>Message : </b> ${message} </p>`;
               const mailOptions = {
-                from: 'sphemicah@gmail.com',
-                to: 'sphehmicah@gmail.com',
-                subject: 'Sending Email using Node.js',
-                text: 'That was easy!',
-                html: "<b>Hello world. This is an html body 🙌</b>"
+                from: email,
+                to: 'info@ingeniousvision.co.za',
+                subject: subject,
+                text: message,
+                html
               };
 
               transporter.sendMail(mailOptions, (error, info)=>{
@@ -43,7 +51,7 @@ router.post('/send',async (req,res,next)=>{
                         status:"BAD",
                         message:error,
                     });
-                  console.log(error);
+         
                 } else {
                     return res.status(200).json({
                         status:"OK",
